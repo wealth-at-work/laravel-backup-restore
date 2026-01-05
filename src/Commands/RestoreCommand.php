@@ -6,9 +6,11 @@ namespace Wnx\LaravelBackupRestore\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Prompts\Prompt;
+use Spatie\Backup\Helpers\Format;
 use Wnx\LaravelBackupRestore\Actions\CheckDependenciesAction;
 use Wnx\LaravelBackupRestore\Actions\CleanupLocalBackupAction;
 use Wnx\LaravelBackupRestore\Actions\DecompressBackupAction;
@@ -39,7 +41,9 @@ class RestoreCommand extends Command
                         {--backup= : The backup to restore. Defaults to the latest backup.}
                         {--connection= : The database connection to restore the backup to. Defaults to the first connection in config/backup.php.}
                         {--password= : The password to decrypt the backup.}
-                        {--reset : Drop all tables in the database before restoring the backup.}';
+                        {--reset : Drop all tables in the database before restoring the backup.}
+                        {--keep : Keeps the downloaded zip and decrypted folder from the backup in existence. Handy for moving files afterwards by hand to the correct location.}
+                        ';
 
     public $description = 'Restore a database backup dump from a given disk to a database connection.';
 
@@ -68,9 +72,11 @@ class RestoreCommand extends Command
         // Dependencies-check is currently disabled. Custom binary paths are currently not supported by the Action.
         // $checkDependenciesAction->execute($connection);
 
+        $diskToRestoreFrom = $this->getDestinationDiskToRestoreFrom();
+
         $pendingRestore = PendingRestore::make(
-            disk: $this->getDestinationDiskToRestoreFrom(),
-            backup: $this->getBackupToRestore($this->getDestinationDiskToRestoreFrom()),
+            disk: $diskToRestoreFrom,
+            backup: $this->getBackupToRestore($diskToRestoreFrom),
             connection: $connection,
             backupPassword: $this->getPassword(),
         );
@@ -90,8 +96,10 @@ class RestoreCommand extends Command
 
         $importDumpAction->execute($pendingRestore);
 
-        info('Cleaning up …');
-        $cleanupLocalBackupAction->execute($pendingRestore);
+        if (! $this->option('keep')) {
+            info('Cleaning up …');
+            $cleanupLocalBackupAction->execute($pendingRestore);
+        }
 
         return $this->runHealthChecks($pendingRestore);
     }
@@ -142,10 +150,21 @@ class RestoreCommand extends Command
             return $this->option('backup');
         }
 
+        $labelLength = 60;
+
+        foreach ($listOfBackups as $key => $path) {
+            $size = Format::humanReadableSize(Storage::disk($disk)->size($path));
+            $labelLength = max($labelLength, strlen($path.$size) + 5);
+            $listOfBackups[$key] = [
+                'path' => $path,
+                'size' => $size,
+            ];
+        }
+
         return select(
             label: 'Which backup should be restored?',
-            options: $listOfBackups->mapWithKeys(fn ($backup) => [$backup => $backup]),
-            default: $listOfBackups->last(),
+            options: $this->getBackupOptions($listOfBackups, $labelLength),
+            default: $listOfBackups->last()['path'],
             scroll: 10
         );
     }
@@ -203,5 +222,12 @@ class RestoreCommand extends Command
             ),
             default: true
         );
+    }
+
+    protected function getBackupOptions(Collection $listOfBackups, int $labelLength): Collection
+    {
+        return $listOfBackups->mapWithKeys(fn ($backup): array => [
+            $backup['path'] => str_pad($backup['path'].' ', ($labelLength - strlen($backup['size'])), '.', STR_PAD_RIGHT).' '.$backup['size'],
+        ]);
     }
 }

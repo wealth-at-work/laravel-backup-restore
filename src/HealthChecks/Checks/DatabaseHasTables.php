@@ -15,16 +15,11 @@ class DatabaseHasTables extends HealthCheck
     {
         $result = Result::make($this);
 
-        $schemaBuilder = DB::connection($pendingRestore->connection)
-            ->getSchemaBuilder();
+        $connection = DB::connection($pendingRestore->connection);
+        $schemaBuilder = $connection->getSchemaBuilder();
 
-        if (method_exists($schemaBuilder, 'getTables')) {
-            $tables = $schemaBuilder->getTables();
-        } else {
-            // `getAllTables()` has been removed in Laravel 11.
-            /** @phpstan-ignore-next-line  */
-            $tables = $schemaBuilder->getAllTables();
-        }
+        $driverName = $connection->getDriverName();
+        $tables = $schemaBuilder->getTables($driverName === 'mysql' ? $connection->getDatabaseName() : null);
 
         if (count($tables) === 0) {
             return $result->failed('Database has not tables after restore.');

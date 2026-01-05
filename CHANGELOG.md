@@ -5,7 +5,90 @@ All notable changes to `laravel-backup-restore` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.3.1...HEAD)
+## [Unreleased](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.9.0...HEAD)
+
+## [v1.9.0](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.8.0...v1.9.0) - 2025-12-26
+
+### Added
+
+- Add Support for PostgreSQL Binary Dumps ([#107](https://github.com/stefanzweifel/laravel-backup-restore/pull/107))
+
+## [v1.8.0](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.7.0...v1.8.0) - 2025-11-30
+
+### Added
+
+- Add Support for PHP 8.5 ([#103](https://github.com/stefanzweifel/laravel-backup-restore/pull/103))
+- Add a keep option to skip the cleanup. ([#105](https://github.com/stefanzweifel/laravel-backup-restore/pull/105))
+
+### Changed
+
+- Drop Support for PHP 8.2 and PHP 8.3 and Laravel 10 and Laravel 11 ([#106](https://github.com/stefanzweifel/laravel-backup-restore/pull/106))
+
+## [v1.7.0](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.6.2...v1.7.0) - 2025-09-09
+
+### Added
+
+- Add Support to pass MySQL Options to mysql binary ([#98](https://github.com/stefanzweifel/laravel-backup-restore/pull/98))
+
+## [v1.6.2](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.6.1...v1.6.2) - 2025-05-14
+
+### Fixed
+
+- Fix Tests for modern Laravel installations ([#96](https://github.com/stefanzweifel/laravel-backup-restore/pull/96))
+
+## [v1.6.1](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.6.0...v1.6.1) - 2025-02-14
+
+### Changed
+
+- Add Support for Laravel 12 ([#90](https://github.com/stefanzweifel/laravel-backup-restore/pull/90))
+
+## [v1.6.0](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.5.2...v1.6.0) - 2025-02-07
+
+### Added
+
+- Include zipped file size in selection choices ([#92](https://github.com/stefanzweifel/laravel-backup-restore/pull/92))
+
+## [v1.5.2](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.5.1...v1.5.2) - 2025-01-20
+
+### Changed
+
+- changed postgres restore command to use a connection uri  ([#88](https://github.com/stefanzweifel/laravel-backup-restore/pull/88))
+
+## [v1.5.1](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.5.0...v1.5.1) - 2025-01-13
+
+### Fixed
+
+- Add Support for laravel/prompts v0.2 and v0.3 ([#87](https://github.com/stefanzweifel/laravel-backup-restore/pull/87))
+
+## [v1.5.0](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.4.2...v1.5.0) - 2024-11-13
+
+### Added
+
+- Add Support for PHP 8.4 ([#82](https://github.com/stefanzweifel/laravel-backup-restore/pull/82))
+
+## [v1.4.2](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.4.1...v1.4.2) - 2024-10-20
+
+### Fixed
+
+- Use local.root value in getAbsolutePathToLocalDecompressedBackup ([#80](https://github.com/stefanzweifel/laravel-backup-restore/pull/80))
+
+## [v1.4.1](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.4.0...v1.4.1) - 2024-08-20
+
+### Fixed
+
+- Remove single quotes from restore command when restoring MySQL dump ([#79](https://github.com/stefanzweifel/laravel-backup-restore/pull/79))
+
+## [v1.4.0](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.3.2...v1.4.0) - 2024-08-07
+
+### Changed
+
+- Added support for spatie/laravel-backup v9 and drop support for v8 and PHP 8.1 ([#76](https://github.com/stefanzweifel/laravel-backup-restore/pull/76))
+
+## [v1.3.2](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.3.1...v1.3.2) - 2024-06-08
+
+### Changed
+
+- Show list of found files in db-dumps directory when NoDatabaseDumpsFound Exception is thrown. ([#74](https://github.com/stefanzweifel/laravel-backup-restore/pull/74))
 
 ## [v1.3.1](https://github.com/stefanzweifel/laravel-backup-restore/compare/v1.3.0...v1.3.1) - 2024-03-20
 

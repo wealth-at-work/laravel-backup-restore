@@ -6,8 +6,8 @@ use Wnx\LaravelBackupRestore\Databases\DbImporter;
 use Wnx\LaravelBackupRestore\DbImporterFactory;
 use Wnx\LaravelBackupRestore\Exceptions\CannotCreateDbImporter;
 
-it('returns db importer instances for given database driver', function ($connectionName, $expectedClass) {
-    expect(DbImporterFactory::createFromConnection($connectionName))->toBeInstanceOf($expectedClass);
+it('returns db importer instances for given database driver', function ($connectionName, $expected) {
+    expect(DbImporterFactory::createFromConnection($connectionName))->toBeInstanceOf($expected);
 })->with([
     [
         'connectionName' => 'mysql',
@@ -36,7 +36,7 @@ it('returns db importer instances for given database driver', function ($connect
 ]);
 
 it('returns custom db importer instance for the given database driver', function () {
-    DbImporterFactory::extend('sqlsrv', new class() extends DbImporter
+    DbImporterFactory::extend('sqlsrv', new class extends DbImporter
     {
         public function getImportCommand(string $dumpFile, string $connection): string
         {

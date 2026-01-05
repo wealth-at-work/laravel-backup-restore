@@ -31,9 +31,9 @@ class MySql extends DbImporter
         ];
 
         if (str($dumpFile)->endsWith('sql')) {
-            $command = $this->getMySqlImportCommandForUncompressedDump($importToDatabase, $dumpFile, $credentialsArray);
+            $command = $this->getMySqlImportCommandForUncompressedDump($importToDatabase, $dumpFile, $credentialsArray, $connection);
         } else {
-            $command = $this->getMySqlImportCommandForCompressedDump($dumpFile, $importToDatabase, $credentialsArray);
+            $command = $this->getMySqlImportCommandForCompressedDump($dumpFile, $importToDatabase, $credentialsArray, $connection);
         }
 
         return $command;
@@ -47,7 +47,7 @@ class MySql extends DbImporter
     /**
      * @throws ImportFailed
      */
-    private function getMySqlImportCommandForCompressedDump(string $storagePathToDatabaseFile, string $importToDatabase, array $credentials): string
+    private function getMySqlImportCommandForCompressedDump(string $storagePathToDatabaseFile, string $importToDatabase, array $credentials, string $connection): string
     {
         $quote = $this->determineQuote();
         $password = $credentials['password'];
@@ -63,14 +63,15 @@ class MySql extends DbImporter
             '|',
             "{$quote}{$this->dumpBinaryPath}mysql{$quote}",
             '-u', $credentials['user'],
-            ! empty($password) ? "{$quote}-p'{$password}'{$quote}" : '',
+            ! empty($password) ? "{$quote}-p{$password}{$quote}" : '',
             '-P', $credentials['port'],
             isset($credentials['host']) ? '-h '.$credentials['host'] : '',
             $importToDatabase,
+            $this->getOptions($connection),
         ])->filter()->implode(' ');
     }
 
-    private function getMySqlImportCommandForUncompressedDump(string $importToDatabase, string $storagePathToDatabaseFile, array $credentials): string
+    private function getMySqlImportCommandForUncompressedDump(string $importToDatabase, string $storagePathToDatabaseFile, array $credentials, string $connection): string
     {
         $quote = $this->determineQuote();
         $password = $credentials['password'];
@@ -78,12 +79,18 @@ class MySql extends DbImporter
         return collect([
             "{$quote}{$this->dumpBinaryPath}mysql{$quote}",
             '-u', $credentials['user'],
-            ! empty($password) ? "{$quote}-p'{$password}'{$quote}" : '',
+            ! empty($password) ? "{$quote}-p{$password}{$quote}" : '',
             '-P', $credentials['port'],
             isset($credentials['host']) ? '-h '.$credentials['host'] : '',
             $importToDatabase,
+            $this->getOptions($connection),
             '<',
             $storagePathToDatabaseFile,
         ])->filter()->implode(' ');
+    }
+
+    private function getOptions(string $connection): string
+    {
+        return config("database.connections.{$connection}.dump.options", '');
     }
 }
